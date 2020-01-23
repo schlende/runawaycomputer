@@ -2,6 +2,6 @@
 
 Load the following URL in Chrome then View -> Enter Full Screen
 
-[Live 'virtual' desktop](https://schlende.github.io/runawaycomputer/)
+[Practical Joke Desktop](https://schlende.github.io/runawaycomputer/)
 
 ![Video Demo](/demovideo.gif)
