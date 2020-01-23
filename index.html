@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <title>Runaway Desktop</title>
+    <script src="js/createjs.min.js"></script>
+  
+    <style>
+      html, body{
+        margin: 0;
+        background: url('images/BackgroundImage.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+    </style>  
+
+    <script>
+
+      var stage = null;
+      var toolBar = null;
+      var menuBar = null;
+
+      function handleWindowResize(){
+        var canvas = document.getElementById("demoCanvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        if(toolBar){
+          positionToolBar();
+        }
+
+        stage.update();
+      }
+
+      function init(){
+        stage = new createjs.Stage("demoCanvas");
+        window.addEventListener('resize', handleWindowResize);
+        handleWindowResize();
+        stage.enableMouseOver(20);
+
+        createjs.Ticker.setFPS(60);
+        createjs.Ticker.addEventListener("tick", stage);
+
+        buildScene();
+      }
+
+      function buildScene(){
+        buildMenuBar();
+        buildLaunchBar();
+      }
+
+      function buildLaunchBar(){
+        var image = new Image();
+        image.src = "images/ToolBar.png";
+        image.onload = handleToolBarLoad;
+      }
+
+      function handleToolBarLoad(event) {
+        var image = event.target;
+        toolBar = new createjs.Bitmap(image);
+        toolBar.tickEnabled = true;
+        toolBar.scale = .7;
+        toolBar.alpha = .9;
+        toolBar.addEventListener('mouseover', handleToolbarMouseOver);
+        positionToolBar();
+        stage.addChild(toolBar);
+        stage.update();
+      }
+
+      function handleToolbarMouseOver(event){
+        console.log("Tool Bar Mouse Over!!!!");
+        bounds = toolBar.getTransformedBounds();
+        if(stage.mouseY < (window.innerHeight - bounds.height - 5)){
+          xval = (window.innerWidth - bounds.width) / 2;
+          createjs.Tween.get(toolBar).to({y:window.innerHeight - (bounds.height - 5), x: xval}, 250);
+        }else{
+          randX = Math.random() * (window.innerWidth - bounds.width);
+          createjs.Tween.get(toolBar).to({y: 50, x: randX}, 250);
+        }
+      }
+
+      function positionToolBar(){
+        bounds = toolBar.getTransformedBounds();
+        toolBar.y = window.innerHeight - (bounds.height - 5);
+        toolBar.x = (window.innerWidth - bounds.width) / 2;
+      }
+
+      function buildMenuBar(){
+        var image = new Image();
+        image.src = "images/TopBar.png";
+        image.onload = handleMenuBarLoad;
+      }
+
+      function handleMenuBarLoad(event) {
+        var image = event.target;
+        menuBar = new createjs.Bitmap(image);
+        menuBar.addEventListener('mouseover', handleMenuBarMouseOver);
+        menuBar.tickEnabled = true;
+        menuBar.scale = .9;
+        stage.addChild(menuBar);
+        stage.update();
+      }
+
+      function handleMenuBarMouseOver(event){
+        console.log('Menu Bar Mouse Over');
+        bounds = menuBar.getTransformedBounds();
+        createjs.Tween.get(menuBar).to({y: -200}, 250).wait(250).call(checkReturn);
+      }
+
+      function checkReturn(){
+        if(stage.mouseY > 50){
+          createjs.Tween.get(menuBar).to({y: 0}, 250);
+        }else{
+          createjs.Tween.get(menuBar).to().wait(250).call(checkReturn);
+        }
+      }
+    </script>
+  
+  </head>
+  <body onload="init()">
+    <canvas id="demoCanvas"></canvas>
+  </body>
+</html>
